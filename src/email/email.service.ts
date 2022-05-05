@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as mailer from 'nodemailer';
@@ -6,7 +6,6 @@ import type Mail from 'nodemailer/lib/mailer';
 import { kullaniciType } from 'src/kullanici/schemas/kullanici.schema';
 import DB from 'src/lib/Database';
 import { dogrulama, dogrulamaType } from './schemas/eposta-dogrulama.schema';
-import crypto from 'crypto';
 import Defaults from 'src/main';
 
 @Injectable()
@@ -39,7 +38,7 @@ export class EmailService {
             subject: 'E-posta adresi doğrulama',
             text:
                 `Selam ${user.kullaniciAdi},\n\nHesabınızın oluşumunu tamamlamak için lütfen e-posta adresinizi doğrulayın:` +
-                `\n\n${verificationUrl}\n\nBu link 24 saat içerisinde geçerliliğini yitirecektir`,
+                `\n\n${verificationUrl}\n\nBu link 24 saat sonra geçerliliğini yitirecektir`,
         });
     }
 
