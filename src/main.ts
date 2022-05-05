@@ -17,6 +17,11 @@ async function bootstrap() {
     );
     app.useGlobalInterceptors(new ResponseInterceptor());
     app.useGlobalFilters(new HttpExceptionFilter(), new DatabaseExceptionFilter());
-    await app.listen(3000);
+    await app.listen(3009);
 }
 bootstrap();
+
+export default class Defaults {
+    static origin = 'perport.net';
+    static hostname = `https://haber.${this.origin}`;
+}

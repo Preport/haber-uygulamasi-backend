@@ -110,8 +110,9 @@ export class YorumService {
             if (yorum.silinmiş)
                 throw new HttpException('Silinmiş bir yoruma düzenleme yapılamaz.', HttpStatus.BAD_REQUEST);
             const update: Partial<yorumType> = updateYorumDto;
+            update.zaman = new Date();
             update.editlenmiş = true;
-            return this.yorumModel.updateOne({ _id: id }, { $set: update }, { upsert: true });
+            return this.yorumModel.updateOne({ _id: id }, { $set: update });
         }
         throw new HttpException('Bu işlem için yetkiniz yok', HttpStatus.FORBIDDEN);
     }
@@ -127,10 +128,10 @@ export class YorumService {
                 {
                     $set: {
                         yorum: '[SİLİNMİŞ]',
+                        zaman: new Date(),
                         silinmiş: true,
                     },
                 },
-                { upsert: true },
             );
         }
         throw new HttpException('Bu işlem için yetkiniz yok', HttpStatus.FORBIDDEN);

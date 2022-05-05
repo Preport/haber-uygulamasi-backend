@@ -14,6 +14,10 @@ export class haber {
     zaman: Date;
     @Prop({ required: true })
     yazar: string;
+    @Prop({ required: true })
+    icerik: string;
+    @Prop({ default: false })
+    editlenmiş: boolean;
 }
 
 export const haberSchema = SchemaFactory.createForClass(haber);

@@ -17,6 +17,8 @@ export class kullanici {
     isModerator: boolean;
     @Prop({ default: () => new Date() })
     sifreSonDegistirmeTarihi: Date;
+    @Prop({ default: false })
+    epostaOnayli: boolean;
 }
 
 export const kullaniciSchema = SchemaFactory.createForClass(kullanici);

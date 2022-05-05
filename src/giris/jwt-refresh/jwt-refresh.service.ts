@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { KullaniciService } from 'src/kullanici/kullanici.service';
 
@@ -28,8 +28,11 @@ export class JwtRefreshService {
         console.log(payload.iat);
 
         if (Math.ceil(user.sifreSonDegistirmeTarihi.getTime() / 1000) >= payload.iat) {
-            return null;
+            throw new HttpException(
+                'Şifreniz son girişinizden sonra değiştirilmiş. Lütfen tekrar giriş yapınız.',
+                HttpStatus.UNAUTHORIZED,
+            );
         }
-        return this.jwtGirisService.tokenOlustur(user);
+        return this.jwtGirisService.createToken(user);
     }
 }

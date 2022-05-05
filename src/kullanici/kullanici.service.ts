@@ -7,10 +7,15 @@ import { UpdateKullaniciDto } from './dto/update-kullanici.dto';
 import { kullanici, kullaniciType } from './schemas/kullanici.schema';
 import { GirisService } from 'src/giris/giris.service';
 import jwtUser from 'src/giris/entities/jwtUser';
+import { EmailService } from 'src/email/email.service';
+import Defaults from 'src/main';
 
 @Injectable()
 export class KullaniciService {
-    constructor(@InjectModel(kullanici.name) private kullaniciModel: Model<kullaniciType>) {}
+    constructor(
+        @InjectModel(kullanici.name) private kullaniciModel: Model<kullaniciType>,
+        private readonly emailService: EmailService,
+    ) {}
     async create(createKullaniciDto: CreateKullaniciDto) {
         const dbKullanici = await this.kullaniciModel.findOne({
             $or: [{ eposta: createKullaniciDto.eposta }, { kullaniciAdi: createKullaniciDto.kullaniciAdi }],
@@ -27,14 +32,26 @@ export class KullaniciService {
         }
         const sifreHash = await GirisService.sifreOlustur(createKullaniciDto.sifre);
 
-        await this.kullaniciModel.create({
+        const kullanici = await this.kullaniciModel.create({
             kullaniciAdi: createKullaniciDto.kullaniciAdi,
             eposta: createKullaniciDto.eposta,
             sifreHash,
         });
-        return 'Hesap başarıyla oluşturuldu lütfen giriş yapınız.';
+
+        const v = await this.emailService.createVerification(kullanici._id);
+
+        this.emailService.sendVerificationMail(kullanici, `${Defaults.hostname}/kullanici/epostaDogrulama?id=${v._id}`);
+        return 'Hesap başarıyla oluşturuldu lütfen e-posta adresinizi kontrol ediniz.';
     }
 
+    async verifyEmail(id: string) {
+        const v = await this.emailService.verify(id);
+        if (!v || Date.now() >= v.sonTarih.getTime())
+            throw new HttpException('Geçersiz doğrulama linki', HttpStatus.BAD_REQUEST);
+
+        await this.kullaniciModel.updateOne({ _id: v.kullaniciID }, { $set: { epostaOnayli: true } });
+        return 'E-posta adresiniz doğrulandı. Şimdi giriş yapabilirsiniz.';
+    }
     findByID(id: string) {
         return this.kullaniciModel.findById(id);
     }
@@ -73,7 +90,7 @@ export class KullaniciService {
                 update.sifreHash = await GirisService.sifreOlustur(updateKullaniciDto.sifre);
             }
 
-            await this.kullaniciModel.updateOne({ _id: id }, { $set: update }, { upsert: true });
+            await this.kullaniciModel.updateOne({ _id: id }, { $set: update });
         } else throw new HttpException('Bu işlem için yetkiniz yok', HttpStatus.FORBIDDEN);
     }
 

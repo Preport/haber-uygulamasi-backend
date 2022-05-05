@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { KullaniciService } from './kullanici.service';
 import { CreateKullaniciDto } from './dto/create-kullanici.dto';
 import { UpdateKullaniciDto } from './dto/update-kullanici.dto';
@@ -15,6 +15,10 @@ export class KullaniciController {
         return this.kullaniciService.create(createKullaniciDto);
     }
 
+    @Get('epostaDogrulama')
+    verifyEmail(@Query('id') id: string) {
+        return this.kullaniciService.verifyEmail(id);
+    }
     @Get(':id')
     async findByID(@Param('id') id: string) {
         const user = (await this.kullaniciService.findByID(id)).toJSON();

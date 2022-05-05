@@ -5,6 +5,7 @@ import { UpdateHaberDto } from './dto/update-haber.dto';
 import { Jwt } from 'src/lib/decorators/jwt.decorator';
 import { User } from 'src/lib/decorators/user.decorator';
 import jwtUser from 'src/giris/entities/jwtUser';
+import { StringDecoder } from 'string_decoder';
 
 @Controller('haber')
 export class HaberController {
@@ -18,16 +19,19 @@ export class HaberController {
     }
 
     @Get()
-    findAll(@Query('start') start: number, @Query('count') count: number) {
-        start ??= 0;
-        count ??= 100;
-        return this.haberService.findAll(Math.max(0, start), Math.max(1, count));
+    findAll(@Query('before') before: string, @Query('after') after: string, @Query('count') count: number) {
+        count ||= 100;
+        return this.haberService.findAll(before, after, Math.max(1, count));
     }
     @Get('ara/:query')
     search(@Param('query') query: string) {
         return this.haberService.search(query);
     }
 
+    @Get('kategori')
+    findRelevant(@Query('categories') categories: number, @Query('since') time: number) {
+        return this.haberService.findRelevant(categories || 255, time || 0);
+    }
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.haberService.findOne(id);
