@@ -6,10 +6,10 @@ import { Throttle } from '@nestjs/throttler';
 import { SifreliAuthGuard } from './lib/guards/sifreli-auth.guard';
 import { JwtRefreshAuthGuard } from './lib/guards/jwt-refresh-auth.guard';
 import { User } from './lib/decorators/user.decorator';
-import jwtUser from './giris/entities/jwtUser';
 import jwtRefreshUser from './giris/entities/jwtRefreshUser';
 import { Response } from 'express';
 import { cwd } from 'process';
+import { IgnoreInterceptor } from './lib/decorators/ignore.interceptor.decorator';
 
 @Controller()
 export class AppController {
@@ -31,6 +31,7 @@ export class AppController {
     }
 
     @Get('')
+    @IgnoreInterceptor()
     async getIndex() {
         return this.appService.getIndex();
     }

@@ -17,7 +17,7 @@ export class YorumController {
     }
 
     @Get()
-    //@Jwt('moderator')
+    @Jwt('moderator')
     findAll() {
         return this.yorumService.findAll();
     }

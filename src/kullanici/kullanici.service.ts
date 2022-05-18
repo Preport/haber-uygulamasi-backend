@@ -40,7 +40,11 @@ export class KullaniciService {
 
         const v = await this.emailService.createVerification(kullanici._id);
 
-        this.emailService.sendVerificationMail(kullanici, `${Defaults.hostname}/kullanici/epostaDogrulama?id=${v._id}`);
+        this.emailService.sendVerificationMail(
+            kullanici,
+            `${Defaults.hostname}/kullanici/epostaDogrulama?id=${v._id}`,
+            v.sonTarih.getTime(),
+        );
         return 'Hesap başarıyla oluşturuldu lütfen e-posta adresinizi kontrol ediniz.';
     }
 

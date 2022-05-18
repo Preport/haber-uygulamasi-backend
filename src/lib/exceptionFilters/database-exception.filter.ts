@@ -8,10 +8,11 @@ export class DatabaseExceptionFilter implements ExceptionFilter {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
 
-        response.status(HttpStatus.BAD_REQUEST).json({
+        console.log(exception);
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
             success: false,
-            statusCode: HttpStatus.BAD_REQUEST,
-            message: exception.message,
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Veri tabanı hatası',
         });
     }
 }

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Model } from 'mongoose';
@@ -9,7 +9,7 @@ import { CreateYorumDto } from './dto/create-yorum.dto';
 import { UpdateYorumDto } from './dto/update-yorum.dto';
 import { yorum, yorumType } from './schemas/yorum.schema';
 
-type aggrYorum = Pick<yorumType, '_id' | 'yorum' | 'zaman' | 'editlenmiş' | 'silinmiş' | 'ustYorum'> & {
+type aggrYorum = Pick<yorumType, '_id' | 'yorum' | 'zaman' | 'editlenmiş' | 'silinmiş' | 'ustYorum' | 'haberID'> & {
     kullaniciAdi: string;
     altYorumlar?: aggrYorum[];
 };
@@ -24,7 +24,13 @@ export class YorumService {
         const proms: mongoose.Query<any, any>[] = [this.haberService.findOne(createYorumDto.haberID)];
         if (createYorumDto.ustYorum) proms.push(this.findOne(createYorumDto.ustYorum));
 
-        await Promise.all(proms);
+        const data = await Promise.all(proms);
+        console.log(data);
+
+        const hID = DB.toObjectID(createYorumDto.haberID, 'haber');
+        if (data[0] === null) throw new BadRequestException("Geçersiz Haber ID'si");
+        if (data.length > 1 && (data[1] === null || !hID.equals((data[1] as yorum).haberID)))
+            throw new BadRequestException("Geçersiz Üst Yorum ID'si");
         return this.yorumModel.create(
             Object.assign(createYorumDto, {
                 kullaniciID: user._id,
@@ -42,9 +48,7 @@ export class YorumService {
         const tümYorumlar: aggrYorum[] = await this.yorumModel.aggregate([
             {
                 $match: {
-                    $expr: {
-                        haberID: haberID,
-                    },
+                    haberID,
                 },
             },
             {
@@ -70,6 +74,7 @@ export class YorumService {
                     silinmiş: 1,
                     ustYorum: 1,
                     zaman: 1,
+                    haberID: 1,
                 },
             },
         ]);

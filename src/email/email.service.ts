@@ -32,13 +32,15 @@ export class EmailService {
         return this.transport.sendMail(Object.assign({}, this.baseOptions, data));
     }
 
-    sendVerificationMail(user: kullaniciType, verificationUrl: string) {
+    sendVerificationMail(user: kullaniciType, verificationUrl: string, expiryDate: number) {
+        const remainingHours = Math.floor(((expiryDate - Date.now()) / 1000) * 60 * 60);
         return this.sendMail({
             to: user.eposta,
             subject: 'E-posta adresi doğrulama',
             text:
                 `Selam ${user.kullaniciAdi},\n\nHesabınızın oluşumunu tamamlamak için lütfen e-posta adresinizi doğrulayın:` +
-                `\n\n${verificationUrl}\n\nBu link 24 saat sonra geçerliliğini yitirecektir`,
+                `\n\n${verificationUrl}\n\nBu link ${remainingHours} saat sonra geçerliliğini yitirecektir.` +
+                `\n\nBu isteği siz göndermediyseniz. Bu e-postayı görmezden gelebilirsiniz.`,
         });
     }
 

@@ -15,6 +15,11 @@ export class JwtRefreshService {
     ) {}
 
     async getRefreshToken(user: kullaniciType) {
+        if (!user.epostaOnayli)
+            throw new HttpException(
+                'Lütfen giriş yapmadan önce e-posta adresinizi doğrulayınız.',
+                HttpStatus.BAD_REQUEST,
+            );
         const refreshPayload = { sub: user._id };
         return {
             refresh_token: this.jwtService.sign(refreshPayload),
@@ -25,9 +30,10 @@ export class JwtRefreshService {
         const user = await this.kullaniciService.findByID(payload._id);
 
         console.log(user.sifreSonDegistirmeTarihi.getTime());
+        console.log(payload);
         console.log(payload.iat);
 
-        if (Math.ceil(user.sifreSonDegistirmeTarihi.getTime() / 1000) >= payload.iat) {
+        if (user.sifreSonDegistirmeTarihi.getTime() >= payload.iat * 1000) {
             throw new HttpException(
                 'Şifreniz son girişinizden sonra değiştirilmiş. Lütfen tekrar giriş yapınız.',
                 HttpStatus.UNAUTHORIZED,

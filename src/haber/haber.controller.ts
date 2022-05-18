@@ -11,7 +11,7 @@ import { StringDecoder } from 'string_decoder';
 export class HaberController {
     constructor(private readonly haberService: HaberService) {}
 
-    //@Jwt('moderator')
+    @Jwt('moderator')
     @Post()
     async create(@Body() createHaberDto: CreateHaberDto, @User() user: jwtUser) {
         createHaberDto.yazar = createHaberDto.yazar || user.kullaniciAdi;
