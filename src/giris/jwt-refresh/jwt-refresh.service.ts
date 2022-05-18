@@ -28,7 +28,7 @@ export class JwtRefreshService {
 
     async refreshAccessToken(payload: jwtRefreshUser) {
         const user = await this.kullaniciService.findByID(payload._id);
-
+        if (user === null) return null;
         console.log(user.sifreSonDegistirmeTarihi.getTime());
         console.log(payload);
         console.log(payload.iat);
