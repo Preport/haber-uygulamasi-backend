@@ -19,6 +19,8 @@ export class kullanici {
     sifreSonDegistirmeTarihi: Date;
     @Prop({ default: false })
     epostaOnayli: boolean;
+    @Prop({ default: () => new Date() })
+    sonBildirimKontrolZamani: Date;
 }
 
 export const kullaniciSchema = SchemaFactory.createForClass(kullanici);

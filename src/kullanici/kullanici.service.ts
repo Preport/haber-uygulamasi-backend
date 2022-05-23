@@ -103,6 +103,17 @@ export class KullaniciService {
         } else throw new HttpException('Bu işlem için yetkiniz yok', HttpStatus.FORBIDDEN);
     }
 
+    async updateNotificationTime(id: string, time: Date) {
+        return this.kullaniciModel.updateOne(
+            { _id: id },
+            {
+                $set: {
+                    sonBildirimKontrolZamai: time,
+                },
+            },
+        );
+    }
+
     remove(requester: jwtUser, id: string) {
         if (requester._id === id || requester.isModerator) {
             return this.kullaniciModel.deleteOne({ _id: id });

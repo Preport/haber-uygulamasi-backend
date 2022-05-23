@@ -20,6 +20,9 @@ export class bildirim {
 
     @Prop({ default: false })
     okundu: boolean;
+
+    @Prop({ default: () => new Date() })
+    zaman: Date;
 }
 
 export const bildirimSchema = SchemaFactory.createForClass(bildirim);

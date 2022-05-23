@@ -3,6 +3,7 @@ import jwtUser from 'src/giris/entities/jwtUser';
 import { Jwt } from 'src/lib/decorators/jwt.decorator';
 import { User } from 'src/lib/decorators/user.decorator';
 import { BildirimService } from './bildirim.service';
+import { UpdateBildirimDto } from './dto/update-bildirim.dto';
 
 @Controller('bildirim')
 export class BildirimController {
@@ -10,8 +11,14 @@ export class BildirimController {
 
     @Get('')
     @Jwt()
-    findAll(@User() user: jwtUser, @Query('since') since: string) {
-        return this.bildirimService.findAll(user, parseInt(since) || 0);
+    findAll(@User() user: jwtUser, @Query('notify') notify: boolean) {
+        return this.bildirimService.findAll(user, notify || false);
+    }
+
+    @Patch(':id')
+    @Jwt()
+    update(@Param('id') id: string, @Body() updateBildirimDto: UpdateBildirimDto) {
+        return this.bildirimService.update(id, updateBildirimDto);
     }
 
     @Delete(':id')
