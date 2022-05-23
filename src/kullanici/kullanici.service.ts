@@ -60,9 +60,14 @@ export class KullaniciService {
         return this.kullaniciModel.findById(id);
     }
 
+    findByCategory(category: number) {
+        return this.kullaniciModel.find({ kategoriSecimleri: { $bitsAnySet: 1 << category } });
+    }
+
     findByEmail(eposta: string) {
         return this.kullaniciModel.findOne({ eposta });
     }
+
     findByUsername(kullaniciAdi: string) {
         return this.kullaniciModel.findOne({ kullaniciAdi });
     }

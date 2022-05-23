@@ -8,12 +8,31 @@ import { haber, haberType } from './schemas/haber.schema';
 
 import mongoose_fuzzy_search from 'mongoose-fuzzy-searching';
 import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
+import { BildirimService } from 'src/bildirim/bildirim.service';
+import { KullaniciService } from 'src/kullanici/kullanici.service';
+import EBildirim from 'src/lib/EBildirim';
 @Injectable()
 export class HaberService {
-    constructor(@InjectModel(haber.name) private haberModel: Model<haberType>) {}
+    constructor(
+        @InjectModel(haber.name) private haberModel: Model<haberType>,
+        private readonly bildirimService: BildirimService,
+        private readonly kullaniciService: KullaniciService,
+    ) {}
 
-    create(createHaberDto: CreateHaberDto) {
-        return this.haberModel.create(createHaberDto);
+    async create(createHaberDto: CreateHaberDto) {
+        const res = await this.haberModel.create(createHaberDto);
+        const users = await this.kullaniciService.findByCategory(createHaberDto.kategoriID);
+        this.bildirimService.insertMany(
+            users.map((user) => {
+                return {
+                    bildirimTipi: EBildirim.Haber,
+                    hedef: res._id,
+                    icerik: createHaberDto.isim,
+                    kullaniciID: user._id,
+                };
+            }),
+        );
+        return res;
     }
 
     async findAll(before: string, after: string, count: number) {

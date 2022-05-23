@@ -10,4 +10,8 @@ export default class DB {
             throw new HttpException(`Geçersiz ${type} IDsi`, HttpStatus.BAD_REQUEST);
         }
     }
+
+    static toTime(id: string) {
+        return parseInt(id.substring(0, 8), 16);
+    }
 }

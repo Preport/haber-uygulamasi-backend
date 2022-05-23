@@ -2,9 +2,11 @@ import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nes
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Model } from 'mongoose';
+import { BildirimService } from 'src/bildirim/bildirim.service';
 import jwtUser from 'src/giris/entities/jwtUser';
 import { HaberService } from 'src/haber/haber.service';
 import DB from 'src/lib/Database';
+import EBildirim from 'src/lib/EBildirim';
 import { CreateYorumDto } from './dto/create-yorum.dto';
 import { UpdateYorumDto } from './dto/update-yorum.dto';
 import { yorum, yorumType } from './schemas/yorum.schema';
@@ -18,6 +20,7 @@ export class YorumService {
     constructor(
         @InjectModel(yorum.name) private readonly yorumModel: Model<yorumType>,
         private readonly haberService: HaberService,
+        private readonly bildirimService: BildirimService,
     ) {}
 
     async create(user: jwtUser, createYorumDto: CreateYorumDto) {
@@ -31,6 +34,16 @@ export class YorumService {
         if (data[0] === null) throw new BadRequestException("Geçersiz Haber ID'si");
         if (data.length > 1 && (data[1] === null || !hID.equals((data[1] as yorum).haberID)))
             throw new BadRequestException("Geçersiz Üst Yorum ID'si");
+
+        //ustYorum var ise yorum sahibi için bildirim oluştur
+        if (createYorumDto.ustYorum && user._id !== (data[1] as yorum).kullaniciID) {
+            this.bildirimService.create({
+                bildirimTipi: EBildirim.Yorum,
+                kullaniciID: (data[1] as yorum).kullaniciID,
+                icerik: createYorumDto.yorum,
+                hedef: user._id,
+            });
+        }
         return this.yorumModel.create(
             Object.assign(createYorumDto, {
                 kullaniciID: user._id,
@@ -96,8 +109,8 @@ export class YorumService {
                 }
             }
         }
-        for (const kök of yorumlar) {
-            altYorumBul(kök);
+        for (const root of yorumlar) {
+            altYorumBul(root);
         }
         return yorumlar;
     }

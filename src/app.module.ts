@@ -8,6 +8,7 @@ import { GirisModule } from './giris/giris.module';
 import { YorumModule } from './yorum/yorum.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { BildirimModule } from './bildirim/bildirim.module';
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { APP_GUARD } from '@nestjs/core';
         KullaniciModule,
         GirisModule,
         YorumModule,
+        BildirimModule,
     ],
     controllers: [AppController],
     providers: [
