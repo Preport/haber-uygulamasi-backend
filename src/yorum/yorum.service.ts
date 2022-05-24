@@ -28,7 +28,6 @@ export class YorumService {
         if (createYorumDto.ustYorum) proms.push(this.findOne(createYorumDto.ustYorum));
 
         const data = await Promise.all(proms);
-        console.log(data);
 
         const hID = DB.toObjectID(createYorumDto.haberID, 'haber');
         if (data[0] === null) throw new BadRequestException("Geçersiz Haber ID'si");
@@ -38,10 +37,10 @@ export class YorumService {
         //ustYorum var ise yorum sahibi için bildirim oluştur
         if (createYorumDto.ustYorum && user._id !== (data[1] as yorum).kullaniciID) {
             this.bildirimService.create({
-                bildirimTipi: EBildirim.Yorum,
+                bildirimTipi: EBildirim.Yorum.valueOf(),
                 kullaniciID: (data[1] as yorum).kullaniciID,
                 icerik: createYorumDto.yorum,
-                hedef: user._id,
+                hedefID: user._id,
             });
         }
         return this.yorumModel.create(

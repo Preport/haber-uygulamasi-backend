@@ -11,7 +11,7 @@ export default class DB {
         }
     }
 
-    static toTime(id: string) {
-        return parseInt(id.substring(0, 8), 16);
+    static toTime(id: mongoose.Types.ObjectId) {
+        return parseInt(id.toString().substring(0, 8), 16);
     }
 }

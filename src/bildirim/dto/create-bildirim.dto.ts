@@ -4,7 +4,7 @@ export class CreateBildirimDto {
     kullaniciID: string;
     bildirimTipi: number;
     icerik: string;
-    hedef: string;
+    hedefID: string;
 
     @IsBoolean()
     okundu?: boolean;

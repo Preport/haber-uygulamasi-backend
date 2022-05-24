@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Document } from 'mongoose';
+import EBildirim from 'src/lib/EBildirim';
 
 export type bildirimType = bildirim & Document;
 
@@ -9,7 +10,7 @@ export class bildirim {
     @Prop({ required: true, index: true, type: mongoose.Schema.Types.ObjectId })
     kullaniciID: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true, type: Number })
     bildirimTipi: number;
 
     @Prop({ required: true })

@@ -29,7 +29,7 @@ export class BildirimService {
         let since: Date = new Date(0);
         if (notify) {
             const d = await this.kullaniciService.findByID(user._id);
-            since = d.sonBildirimKontrolZamani;
+            since = d.sonBildirimKontrolZamani || since;
         }
         const comments = this.bildirimModel.aggregate([
             {
@@ -42,7 +42,7 @@ export class BildirimService {
             {
                 $lookup: {
                     from: 'kullanicilar',
-                    localField: 'hedef',
+                    localField: 'hedefID',
                     foreignField: '_id',
                     as: 'Kullanici',
                 },
@@ -62,13 +62,14 @@ export class BildirimService {
 
         const other = this.bildirimModel.find({
             kullaniciID: user._id,
-            bildirimTipi: { $not: EBildirim.Yorum },
+            bildirimTipi: { $ne: EBildirim.Yorum },
             zaman: {
                 $gt: since,
             },
         });
         const data = await Promise.all([comments, other]);
         this.kullaniciService.updateNotificationTime(user._id, new Date(time));
+        console.log(notify);
         return {
             time,
             items: (data[0].concat(...data[1]) as bildirimType[]).sort((a, b) => DB.toTime(a._id) - DB.toTime(b._id)),

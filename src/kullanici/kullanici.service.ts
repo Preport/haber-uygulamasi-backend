@@ -108,7 +108,7 @@ export class KullaniciService {
             { _id: id },
             {
                 $set: {
-                    sonBildirimKontrolZamai: time,
+                    sonBildirimKontrolZamani: time,
                 },
             },
         );

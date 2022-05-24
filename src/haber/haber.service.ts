@@ -25,8 +25,8 @@ export class HaberService {
         this.bildirimService.insertMany(
             users.map((user) => {
                 return {
-                    bildirimTipi: EBildirim.Haber,
-                    hedef: res._id,
+                    bildirimTipi: EBildirim.Haber.valueOf(),
+                    hedefID: res._id,
                     icerik: createHaberDto.isim,
                     kullaniciID: user._id,
                 };

@@ -30,7 +30,6 @@ export class JwtRefreshService {
         const user = await this.kullaniciService.findByID(payload._id);
         if (user === null) return null;
         console.log(user.sifreSonDegistirmeTarihi.getTime());
-        console.log(payload);
         console.log(payload.iat);
 
         if (user.sifreSonDegistirmeTarihi.getTime() >= payload.iat * 1000) {
