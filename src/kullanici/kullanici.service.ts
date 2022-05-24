@@ -9,6 +9,7 @@ import { GirisService } from 'src/giris/giris.service';
 import jwtUser from 'src/giris/entities/jwtUser';
 import { EmailService } from 'src/email/email.service';
 import Defaults from 'src/main';
+import EKategoriler from 'src/lib/EKategoriler';
 
 @Injectable()
 export class KullaniciService {
@@ -56,8 +57,21 @@ export class KullaniciService {
         await this.kullaniciModel.updateOne({ _id: v.kullaniciID }, { $set: { epostaOnayli: true } });
         return 'E-posta adresiniz doğrulandı. Şimdi giriş yapabilirsiniz.';
     }
+
     findByID(id: string) {
         return this.kullaniciModel.findById(id);
+    }
+
+    async getUserData(id: string) {
+        const l = await this.kullaniciModel.findById(id, {
+            kullaniciAdi: 1,
+            kategoriSecimleri: 1,
+        });
+        const obj = Object.assign(l.toJSON(), {
+            kategoriler: Object.keys(EKategoriler).filter((key) => isNaN(Number(key))),
+        });
+        console.log(obj);
+        return obj;
     }
 
     findByCategory(category: number) {
@@ -77,7 +91,10 @@ export class KullaniciService {
             const update: {
                 kullaniciAdi?: string;
                 sifreHash?: string;
-            } = {};
+                kategoriSecimleri?: number;
+            } = {
+                kategoriSecimleri: updateKullaniciDto.kategoriSecimleri,
+            };
             if (updateKullaniciDto.kullaniciAdi) {
                 const dbKullanici = await this.kullaniciModel.findOne({
                     kullaniciAdi: updateKullaniciDto.kullaniciAdi,

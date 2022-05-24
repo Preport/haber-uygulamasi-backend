@@ -15,6 +15,12 @@ export class KullaniciController {
         return this.kullaniciService.create(createKullaniciDto);
     }
 
+    @Jwt()
+    @Get()
+    getCurrentUserData(@User() user: jwtUser) {
+        return this.kullaniciService.getUserData(user._id);
+    }
+
     @Get('epostaDogrulama')
     verifyEmail(@Query('id') id: string) {
         return this.kullaniciService.verifyEmail(id);
