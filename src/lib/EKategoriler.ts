@@ -1,5 +1,7 @@
 enum Kategoriler {
-  'Spor',
-  'Magazin',
+    'Spor',
+    'Magazin',
+    'Günlük Yaşam',
+    'Ekonomi',
 }
 export default Kategoriler;
